@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-dpath = "/nfs/turbo/arcts-dads-corelogic/Data/deed/0003.gz"
+dpath = "/nfs/turbo/arcts-dads-corelogic/Data/deed/0004.gz"
 
 dtp = {"SALE DATE (YYYYMMDD)": str}
 
@@ -31,9 +31,9 @@ while True:
     dx = dx.loc[dx["TRANSACTION TYPE"] == 1, :]
 
     # Convert to a number (days since 1960-01-01)
-    dx["SALE DATE (YYYYMMDD)"] -= pd.to_datetime("1960-01-01")
-    dx["SALE DATE (YYYYMMDD)"] = dx["SALE DATE (YYYYMMDD)"].dt.days
-    dx["SALE DATE (YYYYMMDD)"] = dx["SALE DATE (YYYYMMDD)"].astype(np.float64)
+    dx["SALE DATE"] = dx["SALE DATE (YYYYMMDD)"] - pd.to_datetime("1960-01-01")
+    dx["SALE DATE"] = dx["SALE DATE"].dt.days
+    dx["SALE DATE"] = dx["SALE DATE"].astype(np.float64)
 
     # Drop non-residential properties
     dx = dx.loc[dx["RESIDENTIAL MODEL INDICATOR"] == "Y"]
@@ -45,7 +45,8 @@ while True:
     dx = pd.merge(dx, nr, left_on="APN (Parcel Number) (unformatted)", right_index=True)
     dx = dx.loc[dx.numrecs > 1]
     
-    dx = dx.loc[:, ["APN (Parcel Number) (unformatted)", "SALE DATE (YYYYMMDD)", "SALE AMOUNT", "FIPS", "CASH/MORTGAGE PURCHASE"]]
+    dx = dx.loc[:, ["APN (Parcel Number) (unformatted)", "SALE DATE", "SALE AMOUNT", "FIPS", 
+                    "CASH/MORTGAGE PURCHASE", "MORTGAGE AMOUNT"]]
 
     dat.append(dx)
 
